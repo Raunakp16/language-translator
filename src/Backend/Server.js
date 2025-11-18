@@ -1,12 +1,23 @@
 import express from "express";
 import cors from "cors";
 import { PythonShell } from "python-shell";
+import dotenv from "dotenv";
+import connectDB from "./Config/db.js";
+import authRoutes from "./Routes/authRoutes.js";
+
+dotenv.config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Translate route
+// Connect to MongoDB
+connectDB();
+
+// Auth Routes
+app.use("/api/auth", authRoutes);
+
+// Translation Route
 app.post("/api/translate", async (req, res) => {
   const { text, target } = req.body;
 
@@ -16,15 +27,15 @@ app.post("/api/translate", async (req, res) => {
 
   const options = {
     args: [text, target],
-    mode: "text", // default, googletrans prints JSON as text
+    mode: "text",
+    // Uncomment if using virtual env:
+    // pythonPath: "C:\\Users\\Lenovo\\Language_translation_app\\src\\venv_translator\\Scripts\\python.exe"
   };
 
   PythonShell.run("translate.py", options)
     .then((result) => {
       try {
-        // Parse JSON string returned by Python
         const parsed = JSON.parse(result[0]);
-
         if (parsed.success) {
           return res.json({ success: true, translated: parsed.translated_text });
         } else {
@@ -41,6 +52,6 @@ app.post("/api/translate", async (req, res) => {
     });
 });
 
-// Server
+// Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`✅ Server running on http://localhost:${PORT}`));

@@ -34,7 +34,7 @@ function Register() {
             <label>Email</label>
             <input id="email" type="text" value={form.email} onChange={(e)=>setForm({...form,email:e.target.value})} required></input>
             <label>Password</label>
-            <input id="password" type="text" value={form.password} onChange={(e)=>setForm({...form,password:e.target.value})} required></input>
+            <input id="password" type="password" value={form.password} onChange={(e)=>setForm({...form,password:e.target.value})} required></input>
             <button className="btn">Register</button>
           </div>
           <p>
